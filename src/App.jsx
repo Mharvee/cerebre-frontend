@@ -1059,8 +1059,7 @@ export default function App() {
     setScreen("analyzing");
     startPhaseAnimation();
     try {
-      const response = await fetch("http://localhost:3001/api/audit", {
-        method: "POST",
+      const response = await fetch("https://cerebre-backend.onrender.com/api/audit", {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           companyName,
