@@ -1115,7 +1115,7 @@ export default function App() {
             {screen === "input" && (
               <div>
                 <div style={{ fontSize: "0.65rem", letterSpacing: "0.3em", color: "#1A1A1A", textTransform: "uppercase", fontFamily: "monospace", marginBottom: "1.25rem" }}>Digital Maturity Audit Engine</div>
-                <p style={{ color: "#111111", lineHeight: 1.9, fontSize: "0.875rem", fontFamily: "sans-serif", marginBottom: "2.5rem" }}>Fill in as much as you know. The more detail you provide, the more accurate and rigorous the audit.</p>
+                
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                   <div>
                     <div style={{ fontSize: "0.62rem", letterSpacing: "0.2em", color: "#C8A96E", textTransform: "uppercase", fontFamily: "monospace", marginBottom: "0.75rem", paddingBottom: "0.5rem", borderBottom: "1px solid #141414" }}>01 — Company Info</div>
