@@ -681,8 +681,12 @@ async function generatePDFReport(results, url, companyName) {
 }
 
 // ── RESULTS VIEW ──────────────────────────────────────────────────────────────
-function ResultsView({ results, url, companyName, onReset }) {
+function ResultsView({ results, url, companyName, onReset, onUpgrade, auditMode }) {
   const domain = extractDomain(url);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinInput, setPinInput] = useState("");
+  const [pinError, setPinError] = useState("");
+  const isPaid = auditMode === "paid" || results?.auditMode === "paid";
   // ALL module8 references now use module8_innovation
   const m8 = results.module8_innovation || {};
   const maturityStage = m8.digitalMaturityStage ?? 0;
@@ -700,6 +704,25 @@ function ResultsView({ results, url, companyName, onReset }) {
 
   return (
     <div>
+      {/* Free / Paid Banner */}
+      {!isPaid ? (
+        <div style={{ background: "linear-gradient(135deg, #FFF8E7, #FFF3D0)", border: "1px solid #F0C040", borderRadius: "10px", padding: "1rem 1.25rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: "0.82rem", color: "#8B6000", letterSpacing: "0.05em", marginBottom: "0.2rem" }}>📊 FREE PREVIEW REPORT</div>
+            <div style={{ fontSize: "0.75rem", color: "#6B4A00", lineHeight: 1.4 }}>You're viewing a summarised audit. Unlock the full in-depth analysis with strategic recommendations, competitor benchmarks and detailed roadmap.</div>
+          </div>
+          <button onClick={() => setShowPinModal(true)} style={{ flexShrink: 0, background: "#1A6B3C", border: "none", color: "#FFFFFF", padding: "0.6rem 1rem", borderRadius: "6px", cursor: "pointer", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.08em", whiteSpace: "nowrap" }}>⚡ Unlock Full</button>
+        </div>
+      ) : (
+        <div style={{ background: "linear-gradient(135deg, #F0FFF6, #E0FAF0)", border: "1px solid #7EB8A4", borderRadius: "10px", padding: "0.875rem 1.25rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <span style={{ fontSize: "1.2rem" }}>✅</span>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: "0.82rem", color: "#1A6B3C", letterSpacing: "0.05em" }}>FULL IN-DEPTH REPORT UNLOCKED</div>
+            <div style={{ fontSize: "0.72rem", color: "#2E7D5A" }}>You have access to the complete analysis with all strategic insights and recommendations.</div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
         <div style={{ fontSize: "0.62rem", letterSpacing: "0.25em", color: "#111111", textTransform: "uppercase", fontFamily: "monospace", marginBottom: "0.5rem" }}>Brand Health Tracker Audit</div>
@@ -999,8 +1022,66 @@ function ResultsView({ results, url, companyName, onReset }) {
         onClick={() => generatePDFReport(results, url, companyName || extractDomain(url))}
         style={{ width: "100%", background: "#1A1A1A", border: "none", color: "#FFFFFF", padding: "1rem", borderRadius: "8px", cursor: "pointer", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "monospace", marginBottom: "0.5rem" }}
       >
-        Download Full Audit Report (PDF)
+        Download Summary Report (PDF)
       </button>
+
+      {/* In-Depth Upgrade Button */}
+      <button
+        onClick={() => setShowPinModal(true)}
+        style={{ width: "100%", background: "linear-gradient(135deg, #1A6B3C, #2E9E5B)", border: "none", color: "#FFFFFF", padding: "1rem", borderRadius: "8px", cursor: "pointer", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "monospace", marginBottom: "0.5rem" }}
+      >
+        ⚡ Get In-Depth Analysis
+      </button>
+
+      {/* PIN Modal */}
+      {showPinModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+          <div style={{ background: "#FFFFFF", borderRadius: "12px", padding: "2rem", width: "90%", maxWidth: "400px", boxShadow: "0 20px 60px rgba(0,0,0,0.2)" }}>
+            <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+              <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🔐</div>
+              <div style={{ fontWeight: 700, fontSize: "1.1rem", color: "#1A1A1A", marginBottom: "0.5rem" }}>Enter Access PIN</div>
+              <div style={{ fontSize: "0.8rem", color: "#666", lineHeight: 1.5 }}>Enter the PIN provided after payment to unlock your full in-depth analysis report.</div>
+            </div>
+            <input
+              type="text"
+              value={pinInput}
+              onChange={e => { setPinInput(e.target.value.toUpperCase()); setPinError(""); }}
+              placeholder="Enter PIN (e.g. CMA-XXXX)"
+              style={{ width: "100%", padding: "0.875rem", border: pinError ? "1px solid #E87B6B" : "1px solid #D0D0D0", borderRadius: "8px", fontSize: "1rem", textAlign: "center", letterSpacing: "0.15em", fontFamily: "monospace", boxSizing: "border-box", marginBottom: "0.5rem", outline: "none" }}
+            />
+            {pinError && <div style={{ color: "#E87B6B", fontSize: "0.75rem", textAlign: "center", marginBottom: "0.5rem" }}>{pinError}</div>}
+            <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
+              <button
+                onClick={() => { setShowPinModal(false); setPinInput(""); setPinError(""); }}
+                style={{ flex: 1, padding: "0.875rem", border: "1px solid #D0D0D0", borderRadius: "8px", background: "#FAFAFA", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600 }}
+              >Cancel</button>
+              <button
+                onClick={() => {
+                  if (!pinInput.trim()) { setPinError("Please enter your PIN"); return; }
+                  onUpgrade(pinInput.trim());
+                  setShowPinModal(false);
+                  setPinInput("");
+                }}
+                style={{ flex: 2, padding: "0.875rem", border: "none", borderRadius: "8px", background: "#1A1A1A", color: "#FFFFFF", cursor: "pointer", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.08em" }}
+              >Unlock Full Report</button>
+            </div>
+            <div style={{ textAlign: "center", marginTop: "1rem", fontSize: "0.72rem", color: "#999" }}>
+              Don't have a PIN? <span style={{ color: "#1A6B3C", cursor: "pointer", fontWeight: 600 }} onClick={async () => {
+  const email = prompt("Enter your email address to proceed to payment:");
+  if (!email) return;
+  const res = await fetch("https://cerebre-backend.onrender.com/api/pay/initialize", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email })
+  });
+  const data = await res.json();
+  if (data.url) window.open(data.url, "_blank");
+  else alert("Could not initialize payment. Please try again.");
+}}>Purchase access →</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem" }}>
         <div style={{ fontSize: "0.62rem", letterSpacing: "0.2em", color: "#111111", textTransform: "uppercase", fontFamily: "monospace", marginBottom: "0.25rem" }}>Qualification Decision</div>
@@ -1023,6 +1104,8 @@ export default function App() {
   const [currentPhase, setCurrentPhase] = useState("pagespeed");
   const [results, setResults] = useState(null);
   const [error, setError] = useState("");
+  const [auditMode, setAuditMode] = useState("free"); // "free" or "paid"
+  const [validPins, setValidPins] = useState({}); // { PIN: true } loaded from backend
   const [socialInputs, setSocialInputs] = useState(["", "", "", "", "", ""]);
   const [competitorInputs, setCompetitorInputs] = useState([
     { name: "", website: "", instagram: "" },
@@ -1059,7 +1142,7 @@ export default function App() {
     setScreen("analyzing");
     startPhaseAnimation();
     try {
-      const response = await fetch("https://cerebre-backend.onrender.com/api/audit", {
+      const response = await fetch("http://localhost:3001/api/audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1104,7 +1187,7 @@ export default function App() {
     <>
       <style>{`* { margin: 0; padding: 0; box-sizing: border-box; } body { background: #FFFFFF; } @keyframes spin { to { transform: rotate(360deg); } }`}</style>
       <div style={{ minHeight: "100vh", background: "#FFFFFF", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "3rem 1rem" }}>
-        <div style={{ width: "100%", maxWidth: "640px" }}>
+        <div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "3rem" }}>
             <img src={CMA_LOGO} alt="Cerebre Media Africa" style={{ height: "36px", width: "auto", objectFit: "contain" }} />
             <span style={{ fontSize: "0.75rem", letterSpacing: "0.15em", color: "#111111", fontFamily: "monospace", textTransform: "uppercase" }}>Cerebre Plus</span>
@@ -1115,7 +1198,7 @@ export default function App() {
             {screen === "input" && (
               <div>
                 <div style={{ fontSize: "0.65rem", letterSpacing: "0.3em", color: "#1A1A1A", textTransform: "uppercase", fontFamily: "monospace", marginBottom: "1.25rem" }}>Digital Maturity Audit Engine</div>
-                
+                <p style={{ color: "#111111", lineHeight: 1.9, fontSize: "0.875rem", fontFamily: "sans-serif", marginBottom: "2.5rem" }}>Fill in as much as you know. The more detail you provide, the more accurate and rigorous the audit.</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                   <div>
                     <div style={{ fontSize: "0.62rem", letterSpacing: "0.2em", color: "#C8A96E", textTransform: "uppercase", fontFamily: "monospace", marginBottom: "0.75rem", paddingBottom: "0.5rem", borderBottom: "1px solid #141414" }}>01 — Company Info</div>
@@ -1169,7 +1252,42 @@ export default function App() {
             )}
 
             {screen === "results" && results && (
-              <ResultsView results={results} url={url} companyName={companyName} onReset={handleReset} />
+              <ResultsView 
+              results={results} 
+              url={url} 
+              companyName={companyName} 
+              auditMode={auditMode}
+              onReset={() => { handleReset(); setAuditMode("free"); }} 
+              onUpgrade={async (pin) => {
+                try {
+                  const res = await fetch("https://cerebre-backend.onrender.com/api/validate-pin", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ pin })
+                  });
+                  const data = await res.json();
+                  if (data.valid) {
+                    setAuditMode("paid");
+                    setScreen("loading");
+                    setCurrentPhase("pagespeed");
+                    try {
+                      const auditRes = await fetch("https://cerebre-backend.onrender.com/api/audit/full", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ url, companyName, pin })
+                      });
+                      const auditData = await auditRes.json();
+                      if (auditData.error) { setError(auditData.error); setScreen("error"); }
+                      else { setResults(auditData); setScreen("results"); }
+                    } catch(e) { setError("Failed to fetch full report. Please try again."); setScreen("error"); }
+                  } else {
+                    alert("❌ Invalid PIN. Please check your PIN and try again.");
+                  }
+                } catch(e) {
+                  alert("Could not validate PIN. Please check your connection and try again.");
+                }
+              }}
+            />
             )}
           </div>
         </div>
