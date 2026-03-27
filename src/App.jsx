@@ -403,7 +403,7 @@ async function generatePDFReport(results, url, companyName, isPaid = false) {
   setTC(BLACK); doc.setFontSize(36); doc.setFont("helvetica", "bold");
   doc.text(String(brandScore), M + 8, y + 27);
   setTC(MID); doc.setFontSize(10);
-  doc.text("/10", M + 8 + (brandScore >= 10 ? 22 : brandScore >= 1 ? 16 : 10), y + 27);
+  doc.text("/100", M + 8 + (brandScore >= 100 ? 22 : brandScore >= 1 ? 16 : 100), y + 27);
   setTC(GREY); doc.setFontSize(6); doc.setFont("helvetica", "normal");
   doc.text("OVERALL BRAND HEALTH SCORE", M + 8, y + 34);
 
@@ -465,7 +465,7 @@ async function generatePDFReport(results, url, companyName, isPaid = false) {
       guard(22);
       subHead(`${i + 1}. ${c.name || "Unknown"}`);
       kv("Website", c.website);
-      kv("Digital Score", c.overallDigitalScore != null ? `${c.overallDigitalScore}/10` : null);
+      kv("Digital Score", c.overallDigitalScore != null ? `${c.overallDigitalScore}/100` : null);
       kv("Monthly Traffic", c.estimatedMonthlyTraffic);
       kv("Key Strength", c.keyDigitalStrength);
       kv("Key Weakness", c.keyWeakness);
@@ -905,7 +905,7 @@ function ResultsView({ results, url, companyName, onReset, onUpgrade, auditMode 
   const parseScore = (val) => {
     if (val == null || val === "") return 0;
     const num = Number(val);
-    return isNaN(num) ? 0 : Math.round(num * 10) / 10; // keep one decimal
+    return isNaN(num) ? 0 : Math.round(num * 10) / 100; // keep one decimal
   };
   const domain = extractDomain(url);
   const [showPinModal, setShowPinModal] = useState(false);
@@ -969,10 +969,10 @@ function ResultsView({ results, url, companyName, onReset, onUpgrade, auditMode 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
         <div style={{ background: "#FAFAFA", border: "1px solid #E0E0E0", borderRadius: "12px", padding: "1.5rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
           <div style={{ position: "relative", marginBottom: "0.5rem" }}>
-            <ScoreRing score={brandScore} max={10} color={overallColor} size={100} />
+            <ScoreRing score={brandScore} max={100} color={overallColor} size={100} />
             <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
               <span style={{ fontSize: "1.5rem", fontWeight: 700, color: overallColor, fontFamily: "monospace", lineHeight: 1 }}>{brandScore}</span>
-              <span style={{ fontSize: "0.5rem", color: "#111111", fontFamily: "monospace" }}>/10</span>
+              <span style={{ fontSize: "0.5rem", color: "#111111", fontFamily: "monospace" }}>/100</span>
             </div>
           </div>
           <div style={{ fontSize: "0.62rem", color: "#111111", textTransform: "uppercase", letterSpacing: "0.1em", fontFamily: "monospace" }}>Brand Health Score</div>
