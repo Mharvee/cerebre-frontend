@@ -1376,7 +1376,7 @@ export default function App() {
     // Debug log before sending
     console.log("Payload being sent:", payload);
 
-    const response = await fetch("https://cerebre-backend.onrender.com/api/validate-pin", {
+    const response = await fetch("https://cerebre-backend.onrender.com/api/audit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
