@@ -1297,15 +1297,7 @@ function ResultsView({ results, url, companyName, onReset, onUpgrade, auditMode 
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem" }}>
-        <div style={{ fontSize: "0.62rem", letterSpacing: "0.2em", color: "#111111", textTransform: "uppercase", fontFamily: "monospace", marginBottom: "0.25rem" }}>Qualification Decision</div>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <button onClick={() => alert("Prospect marked as QUALIFIED")} style={{ flex: 1, background: "rgba(126,184,164,0.12)", border: "1px solid #7EB8A4", color: "#7EB8A4", padding: "0.9rem", borderRadius: "6px", cursor: "pointer", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "monospace" }}>Qualify</button>
-          <button onClick={() => alert("Prospect marked as NOT READY")} style={{ flex: 1, background: "rgba(232,123,107,0.12)", border: "1px solid #E87B6B", color: "#E87B6B", padding: "0.9rem", borderRadius: "6px", cursor: "pointer", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "monospace" }}>Not Ready</button>
-        </div>
-        <textarea placeholder="Internal notes about this prospect..." style={{ width: "100%", background: "#FAFAFA", border: "1px solid #E0E0E0", borderRadius: "6px", padding: "0.875rem", color: "#1A1A1A", fontSize: "0.8rem", fontFamily: "sans-serif", outline: "none", resize: "vertical", minHeight: "80px" }} />
-        <button onClick={onReset} style={{ background: "transparent", border: "1px solid #D8D8D8", color: "#111111", padding: "0.875rem", borderRadius: "6px", cursor: "pointer", fontSize: "0.75rem", letterSpacing: "0.1em", fontFamily: "monospace" }}>Audit Another Prospect</button>
-      </div>
+      
     </div>
   );
 }
@@ -1502,7 +1494,7 @@ export default function App() {
     startPhaseAnimation();
     try {
       const normalized = normalizeUrl(url);
-      const response = await fetch("http://localhost:3001/api/audit", {
+      const response = await fetch("https://cerebre-backend.onrender.com/api/validate-pin",{
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
